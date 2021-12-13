@@ -8,44 +8,15 @@ defmodule Aoc202101 do
 
   defp part1 do
     depth_measurements()
-    |> increased_depths()
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [a, b] -> b > a end)
   end
 
   defp part2 do
     depth_measurements()
-    |> Enum.to_list()
-    |> next_three_window()
-    |> Enum.map(fn [a, b, c] -> a + b + c end)
-    |> increased_depths()
-  end
-
-  defp next_three_window(list) when length(list) >= 3 do
-    window = Enum.take(list, 3)
-    rem = Enum.drop(list, 1)
-    [window | next_three_window(rem)]
-  end
-
-  defp next_three_window(_list) do
-    []
-  end
-
-  defp increased_depths(depths) do
-    {_, count} =
-      depths
-      |> Enum.reduce({nil, 0}, fn depth, {prev, count} ->
-        cond do
-          prev == nil ->
-            {depth, 0}
-
-          prev < depth ->
-            {depth, count + 1}
-
-          true ->
-            {depth, count}
-        end
-      end)
-
-    count
+    |> Enum.chunk_every(3, 1, :discard)
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [[a, b, c], [d, e, f]] -> a + b + c < d + e + f end)
   end
 
   defp depth_measurements do
